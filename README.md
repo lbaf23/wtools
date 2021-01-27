@@ -1,5 +1,9 @@
 # websocketman
 
+
+A websocket/socketio testing tool
+
+
 ## Project setup
 ```
 npm install
