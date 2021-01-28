@@ -50,7 +50,7 @@
             }
         },
         methods: {
-            connectWebsocket() {
+            startSocketio() {
                 this.websocketStatus = 1;
 
                 this.httpServer = createServer();

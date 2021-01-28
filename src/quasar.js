@@ -18,7 +18,8 @@ import {
   QExpansionItem,
   QTabPanels,
   QTabPanel,
-  QBtnDropdown
+  QBtnDropdown,
+  QScrollArea
 } from 'quasar'
 
 Vue.use(Quasar, {
@@ -39,7 +40,8 @@ Vue.use(Quasar, {
     QExpansionItem,
     QTabPanels,
     QTabPanel,
-    QBtnDropdown
+    QBtnDropdown,
+    QScrollArea
   },
   directives: {
     ClosePopup

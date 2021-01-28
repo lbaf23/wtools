@@ -1,16 +1,21 @@
 <template>
     <div>
         <div class="row">
+
             <div class="col-1">
+                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="wsLabel" label="" />
+
+                <!--
                 <q-circular-progress
                         :indeterminate="websocketStatus===1"
                         size="30px"
                         color="blue"
                         class="q-ma-md"
                 />
+                -->
             </div>
             <div class="col-3">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address"/>
+                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address" prefix="://"/>
             </div>
             <div class="col-1">
                 <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="port" label="port" prefix=":" />
@@ -22,7 +27,19 @@
                 <q-btn :color="connectButtonColor[websocketStatus]" :disable="conAbleClick[websocketStatus]" text-color="black" label="连接" style="margin-left: 20px" @click="connectWebsocket()" />
                 <q-btn color="red" :disable="disconAbleClick[websocketStatus]" text-color="black" label="断开" style="margin-left: 20px" @click="closeSocketIO()" />
             </div>
+            <!--
+            <q-circular-progress
+                    :indeterminate="websocketStatus===1"
+                    size="20px"
+                    color="blue"
+            />-->
+            <q-spinner-hourglass
+                    v-if="websocketStatus===1"
+                    color="purple"
+                    size="md"
+            />
         </div>
+
         <div class="row" style="margin-top: 20px">
             <!--
             <div class="col-1">
@@ -30,39 +47,69 @@
             </div>
             -->
             <div class="col-3">
+                <q-scroll-area style="height: 300px;"
+                               :thumb-style="thumbStyle"
+                               :content-style="contentStyle"
+                               :content-active-style="contentActiveStyle"
+                               ref="scrollArea">
                 <q-list bordered separator>
+
                     <q-item v-for="(item,i) in eventList" :key="i">
-                        <q-item-section>{{item}}</q-item-section>
+                        <q-item-section>
+                            {{item}}
+                        </q-item-section>
+                        <q-item-section side>
+                            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeEventItem(i)" />
+                        </q-item-section>
                     </q-item>
 
                     <q-item>
-                        <q-input v-model="messageEvent" label="add event" />
+                        <q-item-section>
+                            <q-input v-model="messageEvent" label="event" />
+                        </q-item-section>
+                        <q-item-section side>
+                            <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addEventItem" />
+                        </q-item-section>
                     </q-item>
                 </q-list>
-
-
+                </q-scroll-area>
             </div>
-            <div>
-                <q-list>
-                    <q-item v-for="(item, i) in eventList" :key="i">
-                        <q-item-section><q-btn round color="primary" icon="minus" size="sm" @click="removeEventItem(i)" /></q-item-section>
-                    </q-item>
 
+            <div class="col" style="margin-left: 20px" >
+                <div class="col-3">
+                    <q-scroll-area style="height: 200px;"
+                                   :thumb-style="thumbStyle"
+                                   :content-style="contentStyle"
+                                   :content-active-style="contentActiveStyle"
+                                   ref="scrollArea">
+                    <q-list bordered separator>
+                        <q-item v-for="(item,i) in argsList" :key="i">
+                            <q-item-section>
+                                {{item}}
+                            </q-item-section>
+                            <q-item-section side>
+                                <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeArgsItem(i)" />
+                            </q-item-section>
+                        </q-item>
 
-                    <q-item style="margin-top: 10px">
-                        <q-item-section><q-btn round color="green" icon="add" size="sm" @click="addEventItem" /></q-item-section>
-                    </q-item>
-                </q-list>
-
-            </div>
-            <div class="col" >
+                        <q-item>
+                            <q-item-section>
+                                <q-input v-model="message" label="add args" />
+                            </q-item-section>
+                            <q-item-section side>
+                                <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" />
+                            </q-item-section>
+                        </q-item>
+                    </q-list>
+                    </q-scroll-area>
+                </div>
                 <div>
-                    <div class="row">
+                    <div class="row" style="margin-top: 20px">
                         <div class="col-4">
-                            <q-input v-if="sendType==='EMIT'" v-model="sendEvent" label="send event" />
+                            <q-input v-if="sendType==='EMIT'" v-model="sendEvent" label="event" />
                         </div>
                         <div class="col" style="margin-top: 20px; margin-left: 10px">
-                            <q-btn-dropdown split class="glossy" color="white"
+                            <q-btn-dropdown split class="glossy" color="white" :disable-main-btn="websocketStatus!==2"
                                     text-color="black" :label="sendType" @click="clickSocketMessage">
                                 <q-list>
                                     <q-item clickable v-close-popup @click="onMessageItemClick('EMIT')">
@@ -103,21 +150,27 @@
                         </div>
                     </div>
                 </div>
-
-                <q-input v-if="typeLabel==='STRING'" v-model="message"  label="message"/>
+                <br/>
             </div>
 
         </div>
         <br/>
+
         <div>
             <q-card>
-                <q-card-section style="overflow-x: hidden; max-height: 400px" id="box">
+                <q-scroll-area style="height: 300px;"
+                               :thumb-style="thumbStyle"
+                               ref="scrollArea">
+                    <q-card-section id="box">
                         <div v-for="(item, i) in messageList" :key="i">
                             <q-chat-message :text="[item.data]" :sent="item.sent" :name="item.name" :stamp="'event:'+item.event" />
                         </div>
-                        <br/>
-                </q-card-section>
+                    </q-card-section>
+                </q-scroll-area>
             </q-card>
+            <div style="margin-left: 500px; margin-top: 10px">
+                <q-btn push round color="red" icon="delete" @click="clearMessages"  />
+            </div>
         </div>
     </div>
 </template>
@@ -129,9 +182,10 @@
         name: "SocketIO",
         data() {
             return {
+                wsLabel: 'ws',
                 typeLabel: 'STRING',
                 messageEvent: '',
-                eventList: ['message', 'json'],
+                eventList: ['message', 'json'], // 接收的事件列表
                 sendEvent: '',
                 sendType: 'EMIT',
 
@@ -144,21 +198,27 @@
                 connectButtonColor: ['white', 'grey', 'green', 'white'],
                 conAbleClick: [false, true, true, false],
                 disconAbleClick: [true, false, false, true],
-                messageList: [
-                ],
+                messageList: [], // 收发消息列表
+                argsList: [], // 传递参数列表
+                argsType: [],
 
-                schema: {
-                    type: 'object',
-                    title: 'vue-json-editor demo',
-                    properties: {
-                        name: {
-                            type: 'string',
-                        },
-                        email: {
-                            type: 'string',
-                        },
-                    },
-                }
+                tttt: true,
+
+                thumbStyle: {
+                    right: '4px',
+                    borderRadius: '5px',
+                    backgroundColor: '#027be3',
+                    width: '5px',
+                    opacity: 0.75
+                },
+                contentActiveStyle: {
+                    backgroundColor: '#eee',
+                    color: 'black'
+                },
+                contentStyle: {
+                    backgroundColor: 'rgba(0,0,0,0.02)',
+                    color: '#555'
+                },
             }
         },
         components:{
@@ -172,8 +232,10 @@
                     })
                 }
                 else {
+                    if(this.wsLabel==='')
+                        this.wsLabel = 'ws';
                     this.websocketStatus = 1;
-                    this.socket = io('ws://' + this.domain + ':' + this.port + '/' + this.nameSpace);
+                    this.socket = io(this.wsLabel+'://' + this.domain + ':' + this.port + '/' + this.nameSpace);
 
                     this.socket.on("connect", this.socketconnect);
                     this.socket.on("disconnect", this.socketdisconnect);
@@ -181,8 +243,8 @@
 
                     for(let i=0; i<this.eventList.length; i++){
                         let e = this.eventList[i];
-                        this.socket.on(e, (msg) => {
-                            this.socketonmessage(msg, e);
+                        this.socket.on(e, (...msg) => {
+                            this.socketonmessage(e, msg);
                         })
                     }
                 }
@@ -200,10 +262,23 @@
                 this.messageEvent = '';
             },
             removeEventItem(i){
+                // eslint-disable-next-line no-unused-vars
                 let e = this.eventList[i];
-                this.socket.on(e, ()=>{});
                 this.eventList.splice(i, 1);
             },
+            addArgsItem(){
+                if(this.typeLabel==='JSON'){
+                    this.message = JSON.parse(this.message);
+                }
+                this.argsList.push(this.message);
+                this.argsType.push('STRING');
+                this.message = '';
+            },
+            removeArgsItem(i){
+                this.argsList.splice(i, 1);
+                this.argsType.splice(i, 1);
+            },
+
             onMessageItemClick(t){
                 this.sendType = t;
             },
@@ -216,14 +291,30 @@
                 }
             },
             emitSocketMessage(){
-                this.socket.emit(this.sendEvent, JSON.parse(this.message));
-                this.messageList.push( {'data': this.message, 'sent': true, 'name': 'client', 'event': this.sendEvent});
+                let l = this.argsList;
+                if(this.typeLabel === 'JSON') {
+                    this.socket.emit(this.sendEvent, ...JSON.parse(this.argsList));
+                    l = JSON.stringify(this.argsList);
+                }
+                else
+                    this.socket.emit(this.sendEvent, ...this.argsList);
+                this.messageList.push( {'data': l, 'sent': true, 'name': 'client', 'event': this.sendEvent});
                 this.scrollToBottom();
             },
             sendSocketMessage(){
-                this.socket.send(this.message);
-                this.messageList.push( {'data': this.message, 'sent': true, 'name': 'client', 'event': 'message'});
+                console.log(this.argsList);
+                let l = this.argsList;
+                if(this.typeLabel === 'JSON') {
+                    this.socket.send(...this.argsList);
+                    l = JSON.stringify(this.argsList);
+                }
+                else
+                    this.socket.send(...this.argsList);
+                this.messageList.push( {'data': l, 'sent': true, 'name': 'client', 'event': 'message'});
                 this.scrollToBottom();
+            },
+            clearMessages(){
+                this.messageList = [];
             },
 
             socketonopen(){
@@ -237,19 +328,18 @@
                     message: '已连接'
                 })
             },
-            socketonmessage(msg, e){
-                console.log('message', JSON.stringify(msg));
-                this.messageList.push( {'data': JSON.stringify(msg), 'sent': false, 'name': 'server', 'event': e});
+            socketonmessage(e, ...msg){
+                let m = msg;
+                if(typeof msg === "object")
+                    m = JSON.stringify(msg);
+                console.log('message', m);
+                this.messageList.push( {'data': m, 'sent': false, 'name': 'server', 'event': e});
                 this.scrollToBottom();
             },
             scrollToBottom(){
                 setTimeout(()=>{
-                    let box = document.getElementById('box');
-                    box.scrollTop = box.scrollHeight
-                }, 10)
-            },
-            socketclose(){
-                console.log('close');
+                    this.$refs.scrollArea.setScrollPosition(document.getElementById('box').scrollHeight)
+                }, 20)
             },
             socketonerror(e){
                 console.log('error', e);
@@ -263,17 +353,29 @@
                 this.$q.notify({
                     type: 'warning',
                     message: '已断开 : ' + reason
-                })
+                });
+                this.websocketStatus = 0;
             },
 
             closeSocketIO(){
                 this.socket.close();
                 this.websocketStatus = 0;
             },
+            messageData(d){
+                if(typeof d === 'object'){
+                    return d;
+                }
+                else{
+                    return [d];
+                }
+            },
 
-
-            onItemClick(l){
-                this.typeLabel = l;
+            onItemClick(i){
+                this.typeLabel = i;
+                if(i==='JSON')
+                    for(let i=0; i<this.argsList.length; i++){
+                        this.argsList[i] = JSON.parse(this.argsList[i]);
+                    }
             }
         },
         created() {
@@ -289,10 +391,11 @@
             this.domain = d===null ? '':d;
             this.port = p===null ? '':p;
             this.nameSpace = n===null ? '':n;
-
-
         },
-        beforeCreate() {
+        destroyed() {
+            localStorage.setItem('domain', this.domain);
+            localStorage.setItem('port', this.port);
+            localStorage.setItem('nameSpace', this.nameSpace);
             if(this.socket){
                 this.socket.close();
             }

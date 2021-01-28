@@ -7,7 +7,7 @@
 
           <q-toolbar-title style="max-width: 80px">
             <q-avatar>
-              <img src="https://cdn.quasar.dev/logo/svg/quasar-logo.svg">
+              <img src="./assets/logo.png">
             </q-avatar>
           </q-toolbar-title>
         </q-toolbar>
