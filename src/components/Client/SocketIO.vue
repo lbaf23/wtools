@@ -355,6 +355,8 @@
                     message: '已断开 : ' + reason
                 });
                 this.websocketStatus = 0;
+                if(this.socket)
+                    this.socket.close();
             },
 
             closeSocketIO(){
