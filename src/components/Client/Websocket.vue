@@ -96,7 +96,7 @@
                     if(this.wsLabel==='')
                         this.wsLabel = 'ws';
                     this.websocketStatus = 1;
-                    const wsuri = this.wsLabel + "://" + this.domain + ":"+this.port + "/" + this.route;
+                    let wsuri = this.wsLabel + "://" + this.domain + ":"+this.port + "/" + this.route;
                     this.websock = new WebSocket(wsuri);
                     this.websock.onmessage = this.websocketonmessage;
                     this.websock.onopen = this.websocketonopen;
@@ -104,7 +104,7 @@
                     this.websock.onclose = this.websocketclose;
                 }
             },
-            websocketonopen(){ //连接建立之后执行send方法发送数据
+            websocketonopen(){
                 console.log('connected', this.socket);
                 this.websocketStatus = 2;
                 this.$q.notify({
