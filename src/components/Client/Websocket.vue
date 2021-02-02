@@ -105,7 +105,7 @@
                 }
             },
             websocketonopen(){
-                console.log('connected', this.socket);
+                console.log('connected', this.websock);
                 this.websocketStatus = 2;
                 this.$q.notify({
                     type: 'positive',
