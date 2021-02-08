@@ -1,23 +1,26 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-1">
-                <q-circular-progress
-                        :indeterminate="websocketStatus===1"
-                        size="30px"
-                        color="blue"
-                        class="q-ma-md"
-                />
+
+            <div class="col-3">
+                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address"/>
             </div>
-            <div class="col">
-                <q-input v-model="urlTextServer" type="url" prefix="ws://" style="font-size: medium; font-family: 'Times New Roman',serif"/>
+            <div class="col-2">
+                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="port" label="port" prefix=":" />
             </div>
-            <div class="col-1"></div>
-            <div class="col">
-                <q-btn :color="connectButtonColor[websocketStatus]" :disable="conAbleClick[websocketStatus]" text-color="black" label="connect" style="margin-top: 20px" @click="connectWebsocket()" />
-                <q-btn color="red" :disable="disconAbleClick[websocketStatus]" text-color="black" label="disconnect" style="margin-top: 20px; margin-left: 20px" @click="closeSocketIO()" />
+            <div class="col-3">
+                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="nameSpace" label="namespace" prefix="/" />
             </div>
+            <div style="margin-top: 20px">
+                <q-btn :color="connectButtonColor[websocketStatus]" text-color="black" :label="lb" style="margin-left: 20px" @click="clickBtn()" />
+            </div>
+            <q-spinner-hourglass
+                    v-if="websocketStatus===1"
+                    color="purple"
+                    size="md"
+            />
         </div>
+
         <div class="row">
             <div class="col-1"></div>
             <div class="col-4">
@@ -32,45 +35,69 @@
 </template>
 
 <script>
-    import { Server } from 'socket.io'
-    import {createServer } from 'http';
-
+    import io from 'socket.io';
+    //import Server from 'worker-loader!./express_server'
     export default {
         name: "SocketIO",
         data() {
             return {
-                urlTextServer: '',
+                worker: null,
                 socket: null,
                 httpServer: null,
+                port: '5000',
+                domain: 'localhost',
+                nameSpace: '',
                 message: '',
                 websocketStatus: 0, // 0 关闭 1 正在连接 2 连接成功 3 连接失败
-                connectButtonColor: ['white', 'grey', 'green', 'white'],
-                conAbleClick: [false, true, true, false],
-                disconAbleClick: [true, true, false, true]
+                connectButtonColor: ['white', 'grey', 'red', 'white'],
+                lb: '监听'
             }
         },
         methods: {
-            startSocketio() {
+            clickBtn(){
+                if(this.lb === '监听'){
+                    this.lb = '断开';
+                    this.startSocketIO()
+                }
+                else{
+                    this.lb = '监听';
+                    this.closeSocketIO()
+                }
+            },
+            startSocketIO() {
                 this.websocketStatus = 1;
 
-                this.httpServer = createServer();
-                this.socket = new Server(this.httpServer, {
 
+                let sk = io(5000, {
+                    cors: {
+                        origin: '*'
+                    }
                 });
-                this.httpServer.listen(5000);
 
+                sk.on('connection', function () {
+                    console.log('connected');
+                });
+
+/*
+                io.on('connection', function () {
+                    console.log('connected');
+                });
+
+                this.worker = new Server();
+                this.worker.postMessage('hello');
+
+                this.worker.onmessage = function (e) {
+                    console.log(e.data);
+                };
+
+*/
                 this.websocketStatus = 2;
 
-                this.socket.onopen = this.socketonopen;
-                this.socket.onmessage = this.socketonmessage;
-                this.socket.onconnect = this.socketconnect;
-                this.socket.onerror = this.socketonerror;
-                this.socket.onclose = this.socketclose;
-                this.socket.ondisconnect = this.socketdisconnect;
 
-                this.socket.on('message', (msg) => {
-                    console.log('message:', msg);
-                })
+                //this.socket.on("connection", this.socketconnect);
+                //this.socket.on("disconnect", this.socketdisconnect);
+                //this.socket.on("connect_error", this.socketonerror);
+
             },
             sendSocketMessage(){
                 //this.socket.send('test', this.message);
@@ -90,17 +117,16 @@
             socketclose(){
                 console.log('close');
             },
-            socketonerror(){
-                console.log('error');
+            socketonerror(e){
+                console.log('error', e);
             },
             socketdisconnect(){
                 console.log('disconnect');
             },
 
             closeSocketIO(){
-                this.socket.close();
-                console.log(this.socket.id);
                 this.websocketStatus = 0;
+                this.worker.terminate();
             }
 
         },

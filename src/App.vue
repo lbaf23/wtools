@@ -16,12 +16,7 @@
       </q-header>
 
       <q-page-container>
-        <q-splitter id="clientPart" v-model="splitterModel">
-          <template v-slot:before>
             <div class="q-pa-md" style="overflow-y: auto">
-              <div class="text-h4 q-mb-md">Client</div>
-
-              <div class="q-gutter-y-md">
                 <q-card>
                   <q-tabs v-model="tab" dense
                           class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator >
@@ -42,44 +37,8 @@
 
                   </q-tab-panels>
                 </q-card>
-              </div>
+
             </div>
-            <br/>
-          </template>
-
-          <template v-slot:after>
-            <div class="q-pa-md">
-              <div class="text-h4 q-mb-md">Server</div>
-
-              <div class="q-gutter-y-md">
-                <q-card>
-                  <q-tabs v-model="serverTab" dense
-                          class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator >
-                    <q-tab name="WebsocketServer" label="Websocket" />
-                    <q-tab name="SocketIOServer" label="SocketIO" />
-                  </q-tabs>
-
-                  <q-separator />
-
-                  <q-tab-panels v-model="serverTab" animated>
-                    <q-tab-panel name="WebsocketServer">
-                      <div class="text-h6">Websocket</div>
-                      <WebsocketServer/>
-                    </q-tab-panel>
-
-                    <q-tab-panel name="SocketIOServer">
-                      <div class="text-h6">SocketIO</div>
-                      <SocketIOServer/>
-                    </q-tab-panel>
-
-                  </q-tab-panels>
-                </q-card>
-              </div>
-            </div>
-            <br/>
-          </template>
-
-        </q-splitter>
 
       </q-page-container>
 
@@ -89,8 +48,6 @@
 <script>
 import SocketIO from "./components/Client/SocketIO";
 import Websocket from "./components/Client/Websocket";
-import SocketIOServer from "./components/Server/SocketIO";
-import WebsocketServer from "./components/Server/Websocket";
 
 export default {
   name: 'LayoutDefault',
@@ -98,14 +55,12 @@ export default {
   components: {
     Websocket,
     SocketIO,
-    WebsocketServer,
-    SocketIOServer
   },
   data () {
     return {
-      splitterModel: 60,
+      splitterModel: 50,
       tab: 'SocketIO',
-      serverTab: 'WebsocketServer',
+      serverTab: 'SocketIOServer',
       wheight: document.documentElement.clientHeight
     }
   },

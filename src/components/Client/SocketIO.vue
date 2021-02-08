@@ -1,116 +1,93 @@
 <template>
     <div>
-        <div class="row">
+        <q-splitter id="clientPart" v-model="splitterModel">
+            <template v-slot:before>
 
-            <div class="col-1">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="wsLabel" label="" />
-
-                <!--
-                <q-circular-progress
-                        :indeterminate="websocketStatus===1"
-                        size="30px"
-                        color="blue"
-                        class="q-ma-md"
-                />
-                -->
-            </div>
-            <div class="col-3">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address" prefix="://"/>
-            </div>
-            <div class="col-1">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="port" label="port" prefix=":" />
-            </div>
-            <div class="col-3">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="nameSpace" label="namespace" prefix="/" />
-            </div>
-            <div style="margin-top: 20px">
-                <q-btn :color="connectButtonColor[websocketStatus]" :disable="conAbleClick[websocketStatus]" text-color="black" label="连接" style="margin-left: 20px" @click="connectWebsocket()" />
-                <q-btn color="red" :disable="disconAbleClick[websocketStatus]" text-color="black" label="断开" style="margin-left: 20px" @click="closeSocketIO()" />
-            </div>
-            <!--
-            <q-circular-progress
-                    :indeterminate="websocketStatus===1"
-                    size="20px"
-                    color="blue"
-            />-->
-            <q-spinner-hourglass
-                    v-if="websocketStatus===1"
-                    color="purple"
-                    size="md"
-            />
-        </div>
-
-        <div class="row" style="margin-top: 20px">
-            <!--
-            <div class="col-1">
-                <q-circular-progress :indeterminate="sendMessageStatus===1" size="30px" color="blue" class="q-ma-md" />
-            </div>
-            -->
-            <div class="col-3">
-                <q-scroll-area style="height: 300px;"
-                               :thumb-style="thumbStyle"
-                               :content-style="contentStyle"
-                               :content-active-style="contentActiveStyle"
-                               ref="scrollArea">
-                <q-list bordered separator>
-
-                    <q-item v-for="(item,i) in eventList" :key="i">
-                        <q-item-section>
-                            {{item}}
-                        </q-item-section>
-                        <q-item-section side>
-                            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeEventItem(i)" />
-                        </q-item-section>
-                    </q-item>
-
-                    <q-item>
-                        <q-item-section>
-                            <q-input v-model="messageEvent" label="event" />
-                        </q-item-section>
-                        <q-item-section side>
-                            <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addEventItem" />
-                        </q-item-section>
-                    </q-item>
-                </q-list>
-                </q-scroll-area>
-            </div>
-
-            <div class="col" style="margin-left: 20px" >
-                <div class="col-3">
-                    <q-scroll-area style="height: 200px;"
-                                   :thumb-style="thumbStyle"
-                                   :content-style="contentStyle"
-                                   :content-active-style="contentActiveStyle"
-                                   ref="scrollArea">
-                    <q-list bordered separator>
-                        <q-item v-for="(item,i) in argsList" :key="i">
-                            <q-item-section>
-                                {{item}}
-                            </q-item-section>
-                            <q-item-section side>
-                                <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeArgsItem(i)" />
-                            </q-item-section>
-                        </q-item>
-
-                        <q-item>
-                            <q-item-section>
-                                <q-input v-model="message" label="add args" />
-                            </q-item-section>
-                            <q-item-section side>
-                                <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" />
-                            </q-item-section>
-                        </q-item>
-                    </q-list>
-                    </q-scroll-area>
+                <div class="row">
+                    <div class="col-1">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="wsLabel" label="" />
+                    </div>
+                    <div class="col-3">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address" prefix="://"/>
+                    </div>
+                    <div class="col-2">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="port" label="port" prefix=":" />
+                    </div>
+                    <div class="col-3">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="nameSpace" label="namespace" prefix="/" />
+                    </div>
+                    <div style="margin-top: 20px">
+                        <q-btn :color="connectButtonColor[websocketStatus]" text-color="black" :label="lb" style="margin-left: 20px" @click="clickBtn()" />
+                    </div>
+                    <q-spinner-hourglass v-if="websocketStatus===1" color="purple" size="md" />
                 </div>
-                <div>
-                    <div class="row" style="margin-top: 20px">
-                        <div class="col-4">
+
+
+                <div class="row" style="margin-top: 20px">
+                    <div class="col-4">
+                        <q-scroll-area style="height: 400px;" :thumb-style="thumbStyle" :content-style="contentStyle" :content-active-style="contentActiveStyle" ref="scrollArea" >
+                            <q-list bordered separator>
+
+                                <q-item v-for="(item,i) in eventList" :key="i">
+                                    <q-item-section>
+                                        {{item}}
+                                    </q-item-section>
+                                    <q-item-section side>
+                                        <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeEventItem(i)" />
+                                    </q-item-section>
+                                </q-item>
+
+                                <q-item>
+                                    <q-item-section>
+                                        <q-input v-model="messageEvent" label="event" />
+                                    </q-item-section>
+                                    <q-item-section side>
+                                        <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addEventItem" />
+                                    </q-item-section>
+                                </q-item>
+                            </q-list>
+                        </q-scroll-area>
+                    </div>
+
+                    <div class="col" style="margin-left: 20px; margin-right: 20px" >
+                        <div class="col-3">
+                            <q-scroll-area style="height: 400px;" :thumb-style="thumbStyle" :content-style="contentStyle" :content-active-style="contentActiveStyle" ref="scrollArea">
+                                <q-list bordered separator>
+                                    <q-item v-for="(item,i) in argsList" :key="i">
+                                        <q-item-section>
+                                            {{item}}
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeArgsItem(i)" />
+                                        </q-item-section>
+                                    </q-item>
+
+                                    <q-item>
+                                        <q-item-section>
+                                            <q-input v-model="message" label="add args" />
+                                        </q-item-section>
+                                        <q-item-section side>
+                                            <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" />
+                                        </q-item-section>
+                                    </q-item>
+                                </q-list>
+                            </q-scroll-area>
+                        </div>
+                        <br/>
+                    </div>
+                </div>
+            </template>
+
+            <template v-slot:after>
+
+                <div class="q-pa-md">
+                    <div class="row" >
+                        <div class="col-8">
                             <q-input v-if="sendType==='EMIT'" v-model="sendEvent" label="event" />
                         </div>
-                        <div class="col" style="margin-top: 20px; margin-left: 10px">
+                        <div class="col" style="margin-top: 20px; margin-left: 20px">
                             <q-btn-dropdown split class="glossy" color="white" :disable-main-btn="websocketStatus!==2"
-                                    text-color="black" :label="sendType" @click="clickSocketMessage">
+                                            text-color="black" :label="sendType" @click="clickSocketMessage">
                                 <q-list>
                                     <q-item clickable v-close-popup @click="onMessageItemClick('EMIT')">
                                         <q-item-section>
@@ -125,53 +102,25 @@
                                     </q-item>
                                 </q-list>
                             </q-btn-dropdown>
-
-                            <q-btn-dropdown color="primary" :label="typeLabel" style="margin-left: 20px">
-                                <q-list>
-                                    <q-item clickable v-close-popup @click="onItemClick('STRING')">
-                                        <q-item-section>
-                                            <q-item-label>STRING</q-item-label>
-                                        </q-item-section>
-                                    </q-item>
-
-                                    <q-item clickable v-close-popup @click="onItemClick('JSON')">
-                                        <q-item-section>
-                                            <q-item-label>JSON</q-item-label>
-                                        </q-item-section>
-                                    </q-item>
-
-                                    <q-item clickable v-close-popup @click="onItemClick('STRING')">
-                                        <q-item-section>
-                                            <q-item-label>Articles</q-item-label>
-                                        </q-item-section>
-                                    </q-item>
-                                </q-list>
-                            </q-btn-dropdown>
                         </div>
                     </div>
+                    <br/>
+                    <q-card>
+                        <q-scroll-area style="height: 340px;" :thumb-style="thumbStyle" ref="scrollArea">
+                            <q-card-section id="box">
+                                <div v-for="(item, i) in messageList" :key="i">
+                                    <q-chat-message :text="[item.data]" :sent="item.sent" :name="item.name" :stamp="'event:'+item.event" />
+                                </div>
+                            </q-card-section>
+                        </q-scroll-area>
+                    </q-card>
+                    <div style="margin-top: 10px">
+                        <q-btn push round color="red" icon="delete" @click="clearMessages"  />
+                    </div>
                 </div>
-                <br/>
-            </div>
 
-        </div>
-        <br/>
-
-        <div>
-            <q-card>
-                <q-scroll-area style="height: 300px;"
-                               :thumb-style="thumbStyle"
-                               ref="scrollArea">
-                    <q-card-section id="box">
-                        <div v-for="(item, i) in messageList" :key="i">
-                            <q-chat-message :text="[item.data]" :sent="item.sent" :name="item.name" :stamp="'event:'+item.event" />
-                        </div>
-                    </q-card-section>
-                </q-scroll-area>
-            </q-card>
-            <div style="margin-left: 500px; margin-top: 10px">
-                <q-btn push round color="red" icon="delete" @click="clearMessages"  />
-            </div>
-        </div>
+            </template>
+        </q-splitter>
     </div>
 </template>
 
@@ -189,20 +138,17 @@
                 sendEvent: '',
                 sendType: 'EMIT',
 
-                domain: '',
-                port: '',
+                domain: 'localhost',
+                port: '5000',
                 nameSpace: '',
                 socket: null,
                 message: '',
                 websocketStatus: 0, // 0 关闭 1 正在连接 2 连接成功 3 连接失败
-                connectButtonColor: ['white', 'grey', 'green', 'white'],
-                conAbleClick: [false, true, true, false],
-                disconAbleClick: [true, false, false, true],
+                lb: '连接',
+                connectButtonColor: ['white', 'grey', 'red', 'white'],
                 messageList: [], // 收发消息列表
                 argsList: [], // 传递参数列表
                 argsType: [],
-
-                tttt: true,
 
                 thumbStyle: {
                     right: '4px',
@@ -219,12 +165,23 @@
                     backgroundColor: 'rgba(0,0,0,0.02)',
                     color: '#555'
                 },
+                splitterModel: 60,
             }
         },
         components:{
         },
         methods: {
-            connectWebsocket() {
+            clickBtn(){
+                if(this.lb==='连接'){
+                    this.lb = '断开';
+                    this.connectSocketIO()
+                }
+                else{
+                    this.lb = '连接';
+                    this.closeSocketIO()
+                }
+            },
+            connectSocketIO() {
                 if(this.domain === ''){
                     this.$q.notify({
                         type: 'negative',

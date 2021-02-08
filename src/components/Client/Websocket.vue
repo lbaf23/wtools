@@ -1,53 +1,65 @@
 <template>
     <div>
-        <div class="row">
+        <q-splitter id="clientPart" v-model="splitterModel">
+            <template v-slot:before>
+                <div class="q-pa-md" >
 
-            <div class="col-1">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="wsLabel" label="" />
-            </div>
-            <div class="col-3">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address" prefix="://"/>
-            </div>
-            <div class="col-1">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="port" label="port" prefix=":" />
-            </div>
-            <div class="col-3">
-                <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="route" label="route" prefix="/" />
-            </div>
-            <div style="margin-top: 20px">
-                <q-btn :color="connectButtonColor[websocketStatus]" :disable="conAbleClick[websocketStatus]" text-color="black" label="连接" style="margin-left: 20px" @click="initWebSocket()" />
-                <q-btn color="red" :disable="disconAbleClick[websocketStatus]" text-color="black" label="断开" style="margin-left: 20px" @click="closeWebsocket()" />
-            </div>
-            <q-spinner-hourglass v-if="websocketStatus===1" color="purple" size="md"/>
-        </div>
+                <div class="row">
 
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-4">
-                <q-input v-model="sendMessage"/>
-            </div>
-            <div class="col-1"></div>
-            <div class="col">
-                <q-btn color="white" :disable="websocketStatus!==2" text-color="black" label="send" style="margin-top: 20px" @click="sendWebsocketMessage()" />
-            </div>
-        </div>
-        <br/>
-        <div>
-            <q-card>
-                <q-scroll-area style="height: 300px;"
-                               :thumb-style="thumbStyle"
-                               ref="scrollArea">
-                    <q-card-section id="box">
-                        <div v-for="(item, i) in messageList" :key="i">
-                            <q-chat-message :text="[item.data]" :sent="item.sent" :name="item.name" :stamp="'event:'+item.event" />
-                        </div>
-                    </q-card-section>
-                </q-scroll-area>
-            </q-card>
-            <div style="margin-left: 500px; margin-top: 10px">
-                <q-btn push round color="red" icon="delete" @click="clearMessages"  />
-            </div>
-        </div>
+                    <div class="col-1">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="wsLabel" label="" />
+                    </div>
+                    <div class="col-3">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="domain" label="ip address" prefix="://"/>
+                    </div>
+                    <div class="col-1">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="port" label="port" prefix=":" />
+                    </div>
+                    <div class="col-3">
+                        <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="route" label="route" prefix="/" />
+                    </div>
+                    <div style="margin-top: 20px">
+                        <q-btn :color="connectButtonColor[websocketStatus]" :disable="conAbleClick[websocketStatus]" text-color="black" label="连接" style="margin-left: 20px" @click="initWebSocket()" />
+                        <q-btn color="red" :disable="disconAbleClick[websocketStatus]" text-color="black" label="断开" style="margin-left: 20px" @click="closeWebsocket()" />
+                    </div>
+                    <q-spinner-hourglass v-if="websocketStatus===1" color="purple" size="md"/>
+                </div>
+                </div>
+            </template>
+
+
+            <template v-slot:after>
+
+                <div class="row" style="margin-left: 20px">
+                    <div class="col">
+                        <q-input v-model="sendMessage"/>
+                    </div>
+                    <div class="col"></div>
+                    <div class="col">
+                        <q-btn color="white" :disable="websocketStatus!==2" text-color="black" label="send" style="margin-top: 20px" @click="sendWebsocketMessage()" />
+                    </div>
+                </div>
+                <br/>
+
+
+
+                <div>
+                    <q-card>
+                        <q-scroll-area style="height: 400px;" :thumb-style="thumbStyle" ref="scrollArea">
+                            <q-card-section id="box">
+                                <div v-for="(item, i) in messageList" :key="i">
+                                    <q-chat-message :text="[item.data]" :sent="item.sent" :name="item.name" :stamp="'event:'+item.event" />
+                                </div>
+                            </q-card-section>
+                        </q-scroll-area>
+                    </q-card>
+                    <div style="margin-top: 10px">
+                        <q-btn push round color="red" icon="delete" @click="clearMessages"  />
+                    </div>
+                </div>
+
+            </template>
+        </q-splitter>
     </div>
 </template>
 
@@ -82,6 +94,7 @@
                     backgroundColor: 'rgba(0,0,0,0.02)',
                     color: '#555'
                 },
+                splitterModel: 50,
             }
         },
         methods: {
