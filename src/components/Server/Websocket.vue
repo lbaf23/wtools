@@ -18,16 +18,7 @@
                 <q-btn color="red" :disable="disconAbleClick[websocketStatus]" text-color="black" label="disconnect" style="margin-top: 20px; margin-left: 20px" @click="websocketclose()" />
             </div>
         </div>
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-4">
-                <q-input v-model="sendMessage"/>
-            </div>
-            <div class="col-1"></div>
-            <div class="col">
-                <q-btn color="white" :disable="websocketStatus!==2" text-color="black" label="send" style="margin-top: 20px" @click="sendWebsocketMessage()" />
-            </div>
-        </div>
+
     </div>
 </template>
 
@@ -38,7 +29,6 @@
             return {
                 urlTextWebServer: '',
                 websock: null,
-                sendMessage: '',
                 websocketStatus: 0, // 0 关闭 1 正在连接 2 连接成功 3 连接失败
                 connectButtonColor: ['white', 'grey', 'green', 'white'],
                 conAbleClick: [false, true, true, false],

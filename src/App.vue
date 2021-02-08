@@ -58,9 +58,7 @@ export default {
   },
   data () {
     return {
-      splitterModel: 50,
       tab: 'SocketIO',
-      serverTab: 'SocketIOServer',
       wheight: document.documentElement.clientHeight
     }
   },

@@ -21,10 +21,19 @@
                     </div>
                     <q-spinner-hourglass v-if="websocketStatus===1" color="purple" size="md" />
                 </div>
+                <br/>
+                <div v-if="websocketStatus===2" class="row">
+                    <q-chip color="green" text-color="white" icon="link">
+                        id:&nbsp;&nbsp;{{socket.id}}
+                    </q-chip>
+                </div>
 
 
                 <div class="row" style="margin-top: 20px">
                     <div class="col-4">
+                        <q-chip size="sm" icon="bookmark">
+                            事件
+                        </q-chip>
                         <q-scroll-area style="height: 400px;" :thumb-style="thumbStyle" :content-style="contentStyle" :content-active-style="contentActiveStyle" ref="scrollArea" >
                             <q-list bordered separator>
 
@@ -51,27 +60,52 @@
 
                     <div class="col" style="margin-left: 20px; margin-right: 20px" >
                         <div class="col-3">
+                            <q-chip size="sm" icon="bookmark">
+                                参数
+                            </q-chip>
                             <q-scroll-area style="height: 400px;" :thumb-style="thumbStyle" :content-style="contentStyle" :content-active-style="contentActiveStyle" ref="scrollArea">
-                                <q-list bordered separator>
+                                <q-list bordered separator >
                                     <q-item v-for="(item,i) in argsList" :key="i">
                                         <q-item-section>
-                                            {{item}}
+                                            <q-btn-dropdown v-if="btnDropdown" :label="argsType[i]" size="sm">
+                                                <q-list>
+                                                    <q-item clickable v-close-popup @click="onItemClick('STRING', i)">
+                                                        <q-item-section>
+                                                            <q-item-label>STRING</q-item-label>
+                                                        </q-item-section>
+                                                    </q-item>
+                                                    <q-item clickable v-close-popup @click="onItemClick('JSON', i)">
+                                                        <q-item-section>
+                                                            <q-item-label>JSON</q-item-label>
+                                                        </q-item-section>
+                                                    </q-item>
+                                                </q-list>
+                                            </q-btn-dropdown>
+                                            <q-input style="margin-top: 5px" outlined v-model="argsList[i]" />
                                         </q-item-section>
                                         <q-item-section side>
                                             <q-btn class="gt-xs" size="12px" flat dense round icon="delete" @click="removeArgsItem(i)" />
                                         </q-item-section>
+
                                     </q-item>
 
+
+                                    <!--
                                     <q-item>
                                         <q-item-section>
                                             <q-input v-model="message" label="add args" />
                                         </q-item-section>
+
                                         <q-item-section side>
                                             <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" />
                                         </q-item-section>
+
                                     </q-item>
+                                    -->
                                 </q-list>
+                                <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" style="margin: 10px; float: right" />
                             </q-scroll-area>
+
                         </div>
                         <br/>
                     </div>
@@ -79,10 +113,12 @@
             </template>
 
             <template v-slot:after>
-
+                <q-chip size="sm" icon="bookmark">
+                    消息
+                </q-chip>
                 <div class="q-pa-md">
-                    <div class="row" >
-                        <div class="col-8">
+                    <div class="row">
+                        <div class="col">
                             <q-input v-if="sendType==='EMIT'" v-model="sendEvent" label="event" />
                         </div>
                         <div class="col" style="margin-top: 20px; margin-left: 20px">
@@ -132,7 +168,6 @@
         data() {
             return {
                 wsLabel: 'ws',
-                typeLabel: 'STRING',
                 messageEvent: '',
                 eventList: ['message', 'json'], // 接收的事件列表
                 sendEvent: '',
@@ -147,15 +182,16 @@
                 lb: '连接',
                 connectButtonColor: ['white', 'grey', 'red', 'white'],
                 messageList: [], // 收发消息列表
-                argsList: [], // 传递参数列表
-                argsType: [],
+
+                argsList: [''], // 传递参数列表
+                argsType: ['STRING'],
 
                 thumbStyle: {
                     right: '4px',
                     borderRadius: '5px',
                     backgroundColor: '#027be3',
                     width: '5px',
-                    opacity: 0.75
+                    //opacity: 0.75
                 },
                 contentActiveStyle: {
                     backgroundColor: '#eee',
@@ -166,6 +202,7 @@
                     color: '#555'
                 },
                 splitterModel: 60,
+                btnDropdown: true
             }
         },
         components:{
@@ -186,7 +223,8 @@
                     this.$q.notify({
                         type: 'negative',
                         message: '输入ip地址'
-                    })
+                    });
+                    this.lb = '连接';
                 }
                 else {
                     if(this.wsLabel==='')
@@ -223,13 +261,10 @@
                 let e = this.eventList[i];
                 this.eventList.splice(i, 1);
             },
+            // 参数列表
             addArgsItem(){
-                if(this.typeLabel==='JSON'){
-                    this.message = JSON.parse(this.message);
-                }
-                this.argsList.push(this.message);
+                this.argsList.push('');
                 this.argsType.push('STRING');
-                this.message = '';
             },
             removeArgsItem(i){
                 this.argsList.splice(i, 1);
@@ -249,24 +284,25 @@
             },
             emitSocketMessage(){
                 let l = this.argsList;
-                if(this.typeLabel === 'JSON') {
-                    this.socket.emit(this.sendEvent, ...JSON.parse(this.argsList));
-                    l = JSON.stringify(this.argsList);
+                if(this.argsList.length === 1){
+                    l = this.argsList[0];
+                    this.socket.emit(this.sendEvent, this.argsList[0]);
                 }
-                else
+                else{
                     this.socket.emit(this.sendEvent, ...this.argsList);
-                this.messageList.push( {'data': l, 'sent': true, 'name': 'client', 'event': this.sendEvent});
+                }
+                this.messageList.push({'data': l, 'sent': true, 'name': 'client', 'event': this.sendEvent});
                 this.scrollToBottom();
             },
             sendSocketMessage(){
-                console.log(this.argsList);
                 let l = this.argsList;
-                if(this.typeLabel === 'JSON') {
-                    this.socket.send(...this.argsList);
-                    l = JSON.stringify(this.argsList);
+                if(this.argsList.length === 1){
+                    l = this.argsList[0];
+                    this.socket.send(this.argsList[0]);
                 }
-                else
+                else {
                     this.socket.send(...this.argsList);
+                }
                 this.messageList.push( {'data': l, 'sent': true, 'name': 'client', 'event': 'message'});
                 this.scrollToBottom();
             },
@@ -285,11 +321,31 @@
                     message: '已连接'
                 })
             },
-            socketonmessage(e, ...msg){
-                let m = msg;
-                if(typeof msg === "object")
-                    m = JSON.stringify(msg);
-                console.log('message', m);
+            socketonmessage(e, msg){
+                let l = msg.length;
+                let m;
+                if(l === 1) {
+                    console.log(msg[0]);
+                    if(typeof msg[0] === 'object'){
+                        m = JSON.stringify(msg);
+                        let len = m.length;
+                        m = m.substring(1, len-1)
+                    }
+                    else{
+                        m = msg[0];
+                    }
+                }
+                else if(l > 1){
+                    if(typeof msg[0] === 'object'){
+                        m = JSON.stringify(msg);
+                        let len = m.length;
+                        m = m.substring(1, len-1)
+                    }
+                    else{
+                        m = msg;
+                    }
+                }
+                console.log(m);
                 this.messageList.push( {'data': m, 'sent': false, 'name': 'server', 'event': e});
                 this.scrollToBottom();
             },
@@ -303,7 +359,7 @@
                 this.$q.notify({
                     type: 'negative',
                     message: '连接出错  ' + e
-                })
+                });
             },
             socketdisconnect(reason){
                 console.log('disconnect');
@@ -311,6 +367,7 @@
                     type: 'warning',
                     message: '已断开 : ' + reason
                 });
+                this.lb = '连接';
                 this.websocketStatus = 0;
                 if(this.socket)
                     this.socket.close();
@@ -328,13 +385,21 @@
                     return [d];
                 }
             },
-
-            onItemClick(i){
-                this.typeLabel = i;
-                if(i==='JSON')
-                    for(let i=0; i<this.argsList.length; i++){
-                        this.argsList[i] = JSON.parse(this.argsList[i]);
-                    }
+            // 参数类型
+            onItemClick(t, i){
+                if(t==='STRING'){
+                    this.argsType[i] = t;
+                }
+                else{
+                    this.argsType[i] = t;
+                }
+                this.freshBtnDropdown()
+            },
+            freshBtnDropdown(){
+                this.btnDropdown = false;
+                this.$nextTick(()=>{
+                    this.btnDropdown = true;
+                })
             }
         },
         created() {
