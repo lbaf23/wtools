@@ -28,7 +28,7 @@
 </template>
 
 <script>
-    import { Kafka } from 'kafkajs'
+    import axios from 'axios'
     export default {
         name: "KafkaPage",
         data() {
@@ -60,32 +60,15 @@
                 }
             },
             connectKafka(){
+                axios.get('http://localhost:3000/socketio', {
+
+                }).then((res)=>{
+                    console.log(res);
+                })
+
                 // eslint-disable-next-line no-unused-vars
                 // const { Kafka } = require('kafkajs');
-                const kafka = new Kafka({
-                    clientId: 'cid',
-                    brokers: ['localhost:9092'],
-                });
-
-                const topicName = 'topic';
-
-                const process  = async () => {
-                    const admin = kafka.admin();
-                    await admin.connect();
-                    await admin.createTopics({
-                        topics: [{
-                            topic: topicName,
-                            numPartitions: 2,
-                            replicationFactor: 1
-                        }
-                        ],
-                    });
-                    await admin.disconnect();
-                };
-
-                process().then(() => console.log('done'));
-
-/*
+                /*
                 this.producer = this.kafka.producer();
                 this.consumer = this.kafka.consumer({groupId: 'gid'});
                 this.run = async () => {
