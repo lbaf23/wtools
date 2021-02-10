@@ -22,6 +22,7 @@
                           class="text-grey" active-color="primary" indicator-color="primary" align="justify" narrow-indicator >
                     <q-tab name="Websocket" label="Websocket" />
                     <q-tab name="SocketIO" label="SocketIO" />
+                    <q-tab name="KafkaPage" label="KafkaPage" />
                   </q-tabs>
 
                   <q-separator />
@@ -33,6 +34,10 @@
 
                     <q-tab-panel name="SocketIO">
                       <SocketIO/>
+                    </q-tab-panel>
+
+                    <q-tab-panel name="KafkaPage">
+                      <KafkaPage/>
                     </q-tab-panel>
 
                   </q-tab-panels>
@@ -48,6 +53,7 @@
 <script>
 import SocketIO from "./components/Client/SocketIO";
 import Websocket from "./components/Client/Websocket";
+import KafkaPage from "./components/Client/KafkaPage";
 
 export default {
   name: 'LayoutDefault',
@@ -55,6 +61,7 @@ export default {
   components: {
     Websocket,
     SocketIO,
+    KafkaPage
   },
   data () {
     return {
