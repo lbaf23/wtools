@@ -60,7 +60,10 @@
                 }
             },
             connectKafka(){
-                axios.get('http://localhost:3000/socketio', {
+                console.log(global.baseUrl);
+
+
+                axios.get(global.baseUrl+'/socketio', {
 
                 }).then((res)=>{
                     console.log(res);

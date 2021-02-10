@@ -1,6 +1,8 @@
 var express = require('express');
+var apiRoutes = express.Router();
 var app = express();
 
+app.use('/api', apiRoutes);
 
 app.all('*', (req, res, next) => {
   res.header("Access-Control-Allow-Origin", "http://localhost:8081");
@@ -15,6 +17,8 @@ app.get('/socketio', function (req, res) {
   res.send('hhh')
 });
 
-var server = app.listen(3000, function () {
-  console.log('listening... 3000')
+console.log(global.baseUrl);
+var server;
+server = app.listen(global.port, function () {
+  console.log('listening... ', global.port)
 });
