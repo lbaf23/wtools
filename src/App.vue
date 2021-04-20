@@ -2,7 +2,7 @@
     <q-layout view="hHh LpR fFf">
 
       <q-header reveal elevated height="110">
-        <q-toolbar>
+        <q-toolbar style="background-color: whitesmoke">
           <q-btn dense flat round icon="menu" @click="left = !left" />
 
           <q-toolbar-title style="max-width: 80px">
@@ -59,11 +59,10 @@ export default {
   data () {
     return {
       tab: 'SocketIO',
-      wheight: document.documentElement.clientHeight
+      left: false,
     }
   },
   methods: {
-    serverSocket: null
   },
   created() {
   }
