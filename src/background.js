@@ -12,8 +12,6 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 async function createWindow() {
-  // start express
-  require('./loadConfig');
 
   // Create the browser window.
   const win = new BrowserWindow({
