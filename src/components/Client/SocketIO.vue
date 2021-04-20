@@ -88,20 +88,6 @@
                                         </q-item-section>
 
                                     </q-item>
-
-
-                                    <!--
-                                    <q-item>
-                                        <q-item-section>
-                                            <q-input v-model="message" label="add args" />
-                                        </q-item-section>
-
-                                        <q-item-section side>
-                                            <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" />
-                                        </q-item-section>
-
-                                    </q-item>
-                                    -->
                                 </q-list>
                                 <q-btn class="gt-xs" size="12px" dense round icon="add" @click="addArgsItem" style="margin: 10px; float: right" />
                             </q-scroll-area>
@@ -191,7 +177,6 @@
                     borderRadius: '5px',
                     backgroundColor: '#027be3',
                     width: '5px',
-                    //opacity: 0.75
                 },
                 contentActiveStyle: {
                     backgroundColor: '#eee',
@@ -403,18 +388,9 @@
             }
         },
         created() {
-            window.addEventListener("beforeunload",()=>{
-                localStorage.setItem('domain', this.domain);
-                localStorage.setItem('port', this.port);
-                localStorage.setItem('nameSpace', this.nameSpace);
-            });
 
-            let d = localStorage.getItem('domain');
-            let p = localStorage.getItem('port');
-            let n = localStorage.getItem('nameSpace');
-            this.domain = d===null ? '':d;
-            this.port = p===null ? '':p;
-            this.nameSpace = n===null ? '':n;
+
+
         },
         destroyed() {
             localStorage.setItem('domain', this.domain);

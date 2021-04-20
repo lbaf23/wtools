@@ -236,17 +236,6 @@
             }
         },
         created() {
-            window.addEventListener("beforeunload",()=>{
-                localStorage.setItem('domainW', this.domain);
-                localStorage.setItem('portW', this.port);
-                localStorage.setItem('nameSpaceW', this.nameSpace);
-            });
-            let d = localStorage.getItem('domainW');
-            let p = localStorage.getItem('portW');
-            let n = localStorage.getItem('nameSpaceW');
-            this.domain = d===null ? '':d;
-            this.port = p===null ? '':p;
-            this.nameSpace = n===null ? '':n;
         },
         destroyed() {
             localStorage.setItem('domainW', this.domain);
