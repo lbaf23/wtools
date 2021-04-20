@@ -3,7 +3,7 @@
         <q-splitter id="clientPart" v-model="splitterModel">
             <template v-slot:before>
 
-                <div class="row">
+                <div class="row" style="font-family: 'Arial Rounded MT Bold',sans-serif;">
                     <div class="col-1">
                         <q-input :disable="websocketStatus===2 || websocketStatus===1" v-model="wsLabel" label="" />
                     </div>
