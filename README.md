@@ -1,5 +1,12 @@
 # wtools
 
+>在线 `Websocket` / `SocketIO` 测试工具
+
+## requires
+```aidl
+vue2.x
+```
+
 ## Project setup
 ```
 yarn install
