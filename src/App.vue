@@ -10,6 +10,9 @@
               <img src="./assets/logo.png">
             </q-avatar>
           </q-toolbar-title>
+          <q-toolbar-title style="max-width: 80px;margin-left: 80%">
+            <a href="https://github.com/lbaf23/wtools" target="_blank"><i class="fab fa-github" style="font-size: 40px;color: #1D1D1D" ></i></a>
+          </q-toolbar-title>
         </q-toolbar>
 
 
@@ -48,6 +51,7 @@
 <script>
 import SocketIO from "./components/Client/SocketIO";
 import Websocket from "./components/Client/Websocket";
+
 
 export default {
   name: 'LayoutDefault',
