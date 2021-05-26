@@ -49,8 +49,8 @@
 </template>
 
 <script>
-import SocketIO from "./components/Client/SocketIO";
-import Websocket from "./components/Client/Websocket";
+import SocketIO from "./components/socket/SocketIO";
+import Websocket from "./components/socket/Websocket";
 
 
 export default {
