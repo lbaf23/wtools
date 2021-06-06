@@ -6,7 +6,7 @@
           <q-btn dense flat round icon="menu" @click="left = !left" />
 
           <q-toolbar-title style="max-width: 80px">
-            <q-avatar>
+            <q-avatar square>
               <img src="./assets/logo.png">
             </q-avatar>
           </q-toolbar-title>

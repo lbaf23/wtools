@@ -5,13 +5,13 @@
 > 
 > demo: http://lbaf23.top:5000/
 
-![](images/websocket1.png)
+![](./images/websocket1.PNG)
 
-![](images/socketio1.png)
+![](./images/socketio1.PNG)
 
 ## requires
 ```aidl
-vue2.x
+vue2.6
 ```
 
 ## Project setup
