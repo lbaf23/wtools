@@ -3,7 +3,7 @@
 >在线 `Websocket` / `SocketIO` 测试工具
 > 
 > 
-> demo: http://lbaf23.top:5000/
+> demo: https://lbaf23.top:5000/
 
 ![](./images/websocket1.PNG)
 
@@ -11,7 +11,7 @@
 
 ## requires
 ```aidl
-vue2.6
+vue2.6.11
 ```
 
 ## Project setup
