@@ -3,7 +3,6 @@
 >在线 `Websocket` / `SocketIO` 测试工具
 > 
 > 
-> demo: https://lbaf23.top:5000/
 
 ![](https://github.com/lbaf23/wtools/blob/main/images/websocket1.PNG)
 
